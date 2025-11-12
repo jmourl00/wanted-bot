@@ -1,7 +1,7 @@
 RECOMENDACIONES DE SEGURIDAD
-  1. NO usar este programa con fines comerciales o con intenciones que vayan en contra de las politicas de Vinted
+  1. NO usar este programa con fines comerciales o con intenciones que vayan en contra de las politicas de las plataformas de comercio web.
   2. REVISAR EL CONTENIDO de el archivo .conf antes de ejecutar el programa
-  3. Para más privacidad y seguridad, usar una VPN antes de ejecutar el programa, aunque afecte en el tiempo de respuesta...
+  3. Para más privacidad y seguridad, usar una VPN antes de ejecutar el programa, aunque puede afectar en el tiempo de respuesta...
 
 Antes de ejecutar el programa, asegurarse de instalar todas las librerias del archivo requirements.txt con el
 siguiente comando: py -m pip install -r requirements.txt
