@@ -97,7 +97,7 @@ def checkParams(idle=True, hilos_activos=[]):
           f"\nVersión: {platform.version()}"
           f"\nDetalles del sistema: {platform.platform()}"
           f"\nVersion de Python: {sys.version}"
-          f"\n\nUsuario actual: {os.getlogin()}"
+          #f"\n\nUsuario actual: {os.getlogin()}"
           f"\nNombre de la máquina: {platform.node()}"
           f"\n\nDirectorio actual: {os.getcwd()}"
           f"\nIPv4 Pública: {requests.get('https://api4.ipify.org?format=text').text}"

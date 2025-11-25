@@ -21,7 +21,7 @@ class Wanted:
         self.url = None
         self.tags = []
         self.notTags = []
-        self.timeUrlParams = [15, 10]
+        self.timeUrlParams = []
         self.proxy = None
         self.proxies = []
         self.search = "HTML"

@@ -19,6 +19,7 @@ from typing import List
 import subprocess
 import requests
 import time
+import sys
 
 class WantedAPI:
 
@@ -30,13 +31,30 @@ class WantedAPI:
         self.proxy = proxy 
         self.email = email
         self.password = password
+        self.chromedriver_path = None
+        self.service = None
+
 
         if type_search == "API":
             self.client = Requester(self.locale)
         else:
-            self.chromedriver_path = ChromeDriverManager().install()
-            self.service = Service(executable_path=self.chromedriver_path, log_path="nul")
-            self.service.creationflags = subprocess.CREATE_NO_WINDOW
+            
+            # Instanciamos el driver
+            self.driver = None
+            
+            # "nul" solo existe en Windows, usa "/dev/null" en Linux
+            log_path = "nul" if sys.platform == "win32" else "/dev/null"
+
+            # Determinar flags de creación (solo en Windows)
+            creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
+
+            # Crear el servicio correctamente
+            self.service = Service(executable_path=self.chromedriver_path, log_path=log_path)
+
+            # Si deseas aplicar los flags de creación (solo relevante en Windows)
+            if sys.platform == "win32":
+                self.service.creationflags = creationflags
+
             self.configure_selenium(proxy)
 
 
@@ -183,7 +201,8 @@ class WantedAPI:
         start_time = time.time()
 
         # Inicializar el driver de Selenium
-        self.driver = webdriver.Chrome(service=self.service, options=self.options)
+        if self.driver is None:
+            self.driver = webdriver.Chrome(service=self.service, options=self.options)
         
         #self.driver = uc.Chrome(service=self.service, options=self.options)
         # Elemento de espera para que la página cargue completamente
@@ -231,9 +250,10 @@ class WantedAPI:
         except Exception as e:
             print(f"[API] Error al cargar la página: {type(e).__name__}: {e}")
             self.driver.quit()
+            self.driver = None
             return []
 
-        self.driver.quit()
+        #self.driver.quit()
 
         try:
             # Procesar los items de la página HTML, se puede limitar el número de items procesados
@@ -249,6 +269,7 @@ class WantedAPI:
         except Exception as e:
             print(f"[API] Error el el parseo del html: {type(e).__name__}: {e}")
             self.driver.quit()
+            self.driver = None
             return []
 
         # Esto es ambiguo, ya que puede no haber items pero la búsqueda fue exitosa

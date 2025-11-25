@@ -1,13 +1,30 @@
 URL:
-https://es.wallapop.com/search?keywords=cafetera&order_by=newest
+https://es.wallapop.com/search?category_id=24200&min_sale_price=25&max_sale_price=100&keywords=nintendo+3ds&order_by=newest&source=side_bar_filters
 
 Tags: 
+nintendo
+3ds
+hs
+broke
+rot
 
 No Tags: 
+gameboy
+gba
+gamecube
+cd
+n64
+nintendo64
+pokemon
+pokémon
+pikachu
+korgs
+jeux
+cartridge 
 
 Time Params:
 15
-10
+5
 
 Proxy:
 
