@@ -24,7 +24,7 @@ import sys
 class WantedAPI:
 
     def __init__(self, locale: str = "www.vinted.es", type_search: str = "API", proxy: str = None, email: str =  None, password: str =  None):
-        self.api_endpoint = f"http://www.vinted.es/api/v2/catalog/items" 
+        self.api_endpoint = f"https://www.vinted.es/api/v2/catalog/items" 
         self.base_url = f"{locale}" #self.base_url = f"https://{locale}"
         self.locale = locale
         self.search_number = 0
@@ -93,7 +93,7 @@ class WantedAPI:
     # <-> Busca artículos usando la API de Vinted
     #     Devuelve una lista de objetos Item que contienen la información de los artículos.
 
-    def search_items_api(self, search_text: str, page: int = 1, per_page: int = 20, proxy: str = None) -> List[Item]:
+    def search_items_api(self, page: int = 1, per_page: int = 20, proxy: str = None) -> List[Item]:
 
         #start_time = time.time()
 
@@ -170,7 +170,7 @@ class WantedAPI:
         return items
 
 
-    # <-> Devuelve los items procesados de la búsqueda HTML
+    # <-> Devuelve los items procesados de la búsqueda a la API
 
     def format_items_api(self, data, items= []) -> List[Item]:
         for entry in data.get("items", []):
@@ -178,6 +178,7 @@ class WantedAPI:
                 id=str(entry.get("id")),
                 title=entry.get("title", ""),
                 price=str(entry.get("price", {}).get("amount", "")),
+                description="", 
                 brand_title=entry.get("brand", {}).get("title", ""),
                 photo=entry.get("photo", {}).get("url", ""),
                 url=f"https://www.vinted.es/items/{entry.get('id')}",

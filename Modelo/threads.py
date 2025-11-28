@@ -14,8 +14,8 @@ import time
 import io
 
 # Credenciales del BOT de Telegram
-TELEGRAM_BOT_TOKEN = ""
-TELEGRAM_CHAT_ID = ""
+TELEGRAM_BOT_TOKEN = "7858665096:AAGPlaGpjN5ZfmFvjG0g6oyHaVWj_uFXKoA"
+TELEGRAM_CHAT_ID = "843250757"
 bot = telegram.Bot(token=TELEGRAM_BOT_TOKEN)
 
 
@@ -149,12 +149,22 @@ def run_async_sync(coro, timeout=None):
     finally:
         loop.close()
 
+# <-> Envia un mensaje a Telegram
+
+async def send_message(message):
+
+    # Enviar la notificación a Telegram
+    await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=f"{message}\n\n")
+
+    #await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text= "Funciona" + "\n\n")
+    print("Notificación enviada a través de Telegram.")
+
 # <-> Envia una notificación a Telegram con los datos del item encontrado
 #     Se debe tener configurado el bot de Telegram y el chat ID
 
 async def send_notification(item):
 
-    filename = f'Hora_envio_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}'
+    #filename = f'Hora_envio_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}'
 
     # Enviar la notificación a Telegram
     if item.photo:
@@ -254,8 +264,8 @@ def comprobarItem(itemcheck, timeWait, timeLimit, urls, noTags, tags):
     ):
         #asyncio.run(send_notification(itemcheck))
         urls.append(itemcheck.url)
-        return True;
-    return False;
+        return True
+    return False
     #sleep(timeWait)
 
 
@@ -292,12 +302,12 @@ def startBusqueda(linkName, timeLimit=15, timeWait=5, urls=[], noTags=[], tags=[
         #for i in range(50):
 
         timer = time.time()
-        if  type == "API":
+        if typeSearch == "API":
             print(f"\n[SEARCH] Buscando articulos en la API...")
-            items = wanted.search_items_api(linkName, page=1, proxy=proxy)
+            items = wanted.search_items_api()
         else:
             print(f"\n[SEARCH] Buscando articulos en el HTML...")
-            items = wanted.search_items_html(linkName, page=1, proxy=proxy, typeApp=typeApp)
+            items = wanted.search_items_html()
 
         #if len(items) == 0:
         #    errors += 1
@@ -377,17 +387,39 @@ def proxyfinder(proxies=[], blacklist_proxies=[], linkName="https://www.vinted.e
 
 def monitor(hilos_activos, check_interval=3):
     while True:
-        # Creamos una lista temporal para eliminar después (evita modificar mientras se itera)
         hilos_a_eliminar = []
 
-        for nombre, info in hilos_activos.items():
+        for nombre, info in list(hilos_activos.items()):
             hilo = info["thread"]
 
             if not hilo.is_alive():
-                print(f"⚠️ ALERTA: {nombre} ha dejado de funcionar.")
-                hilos_a_eliminar.append(nombre)
+                mensaje = f"⚠️ ALERTA: {nombre} ha dejado de funcionar."
+                print(mensaje)
+                run_async_sync(send_message(mensaje))
 
-        # Eliminamos fuera del bucle principal
+                if info.get("relaunch"):
+                    print(f"🔄 Reiniciando hilo {nombre}...")
+
+                    # función creadora
+                    creator = info["creator"]
+                    # parámetros originales
+                    args = info["args"]
+
+                    # recrear hilo
+                    new_thread, new_stop_event = creator(*args)
+
+                    # actualizar registro
+                    hilos_activos[nombre] = {
+                        "thread": new_thread,
+                        "stop": new_stop_event,
+                        "relaunch": True,
+                        "creator": creator,
+                        "args": args,
+                    }
+
+                else:
+                    hilos_a_eliminar.append(nombre)
+
         for nombre in hilos_a_eliminar:
             del hilos_activos[nombre]
 

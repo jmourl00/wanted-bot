@@ -157,7 +157,7 @@ class Wanted:
             sleep(2)
             return False
         
-        if self.search == "API" and self.typeApp not in ["wallapop", "milanuncios", "ebay"]:
+        if self.search == "API" and self.typeApp not in ["wallapop", "milanuncios", "ebay", "vinted"]:
             UIface.mostrar_error(f"La búsqueda por API no está soportada para {self.typeApp}.")
             sleep(2)
 
@@ -267,7 +267,28 @@ class Wanted:
                     self.password
                 )
 
-                self.hilos_activos[hilo.name] = {"thread": hilo, "stop": stop_event}
+                self.hilos_activos[hilo.name] = {
+                    "thread": hilo,
+                    "stop": stop_event,
+                    "relaunch": True,
+                    "creator": threads.searchThread,   # función que lo creó
+                    "args": (
+                        [self.timeUrlParams[0], self.timeUrlParams[1], self.url],
+                        self.tags,
+                        self.notTags,
+                        self.proxy,
+                        len(self.hilos_activos),
+                        self.proxies,
+                        self.blacklist_proxies,
+                        self.proxy_lock,
+                        self.thread_limit,
+                        self.search,
+                        self.typeApp,
+                        self.email,
+                        self.password
+                    )
+                }
+                
                 if(self.proxy == "AUTOMATIC"):
                     # Hilo de búsqueda de proxies
                     hilo_proxy, stop_event_proxy = threads.proxyfinder(self.proxies, 
@@ -305,9 +326,9 @@ class Wanted:
                     if hilo_info["thread"].is_alive():
                         UIface.mostrar_error("[MAIN] ❌ El hilo sigue activo después del segundo intento. Es posible que no se haya detenido correctamente.")
                         continue
-
-                print(f"[SYS] {nombre} detenido.")
+                    
                 del self.hilos_activos[nombre]
+                print(f"[SYS] {nombre} detenido.")
 
             elif option == "5":
                 UIface.endProgram()
